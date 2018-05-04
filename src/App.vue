@@ -5,7 +5,7 @@
       <!-- <Nav/> -->
       <Toolbar/>
       <Search/>
-      <List/>
+      <!-- <List/> -->
       <Footer/>
     </v-app>
   </div>
@@ -16,7 +16,7 @@ import Nav from './components/Nav';
 import Toolbar from './components/Toolbar';
 import Footer from './components/Footer';
 import Search from './components/Search';
-import List from './components/List';
+// import List from './components/List';
 
 export default {
   name: 'App',
@@ -24,7 +24,7 @@ export default {
     Nav,
     Toolbar,
     Search,
-    List,
+    // List,
     Footer
   }
 };

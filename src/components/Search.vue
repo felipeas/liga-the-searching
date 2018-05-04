@@ -18,50 +18,22 @@
             search
           </v-btn>
           <v-btn @click="clear">clear</v-btn>
-          <v-data-iterator
-            content-tag="v-layout"
-            row
-            wrap
-            :items="items"
-            :rows-per-page-items="rowsPerPageItems"
-            :pagination.sync="pagination"
+
+
+          <v-data-table
+              :headers="headers"
+              :items="items"
+              hide-actions
+              class="elevation-1"
           >
-            <v-flex
-              slot="item"
-              slot-scope="props"
-              xs12
-              sm6
-              md4
-              lg3
-            >
-              <v-card>
-                <v-card-title>ss</v-card-title>
-                <v-divider></v-divider>
-                <v-list dense>
-                  <v-list-tile>
-                    <v-list-tile-content>Preço:</v-list-tile-content>
-                    <v-list-tile-content class="align-end">{{ props.item.preco }}</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Link:</v-list-tile-content>
-                    <v-list-tile-content class="align-end">{{ props.item.link }}</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Condicao:</v-list-tile-content>
-                    <v-list-tile-content class="align-end">{{ props.item.condicao }}</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Quantidade:</v-list-tile-content>
-                    <v-list-tile-content class="align-end">{{ props.item.quantidade }}</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Idioma:</v-list-tile-content>
-                    <v-list-tile-content class="align-end">{{ props.item.idioma }}</v-list-tile-content>
-                  </v-list-tile>
-                </v-list>
-              </v-card>
-            </v-flex>
-          </v-data-iterator>
+            <template slot="items" slot-scope="props">
+              <td class="text-xs-right">{{ props.item.preco }}</td>
+              <td class="text-xs-right">{{ props.item.condicao }}</td>
+              <td class="text-xs-right">{{ props.item.quantidade }}</td>
+              <td class="text-xs-right">{{ props.item.idioma }}</td>
+              <td class="text-xs-right">{{ props.item.link }}</td>
+            </template>
+          </v-data-table>  
         </v-form>
       </v-flex>
     </v-layout>
@@ -78,10 +50,17 @@ export default {
     name: '',
     nameRules: [v => !!v || 'Name is required'],
     items: [],
-    rowsPerPageItems: [4, 8, 12],
-    pagination: {
-      rowsPerPage: 4
-    }
+    headers: [
+          {
+            text: 'preco',
+            align: 'right',
+            value: 'preco'
+          },
+          { text: 'Condicao', value: 'condicao' },
+          { text: 'Qtde', value: 'quantidade' },
+          { text: 'Idioma', value: 'idioma' },
+          { text: 'Link', value: 'link' }
+        ],
   }),
 
   methods: {
