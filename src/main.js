@@ -3,6 +3,7 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import App from './App';
+import router from './router';
 
 Vue.config.productionTip = false;
 Vue.use(Vuetify);
@@ -12,5 +13,6 @@ console.log(process.env);
 new Vue({
   el: '#app',
   components: { App },
-  template: '<App/>'
+  template: '<App/>',
+  router
 });

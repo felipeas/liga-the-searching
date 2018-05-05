@@ -27,11 +27,13 @@
               class="elevation-1"
           >
             <template slot="items" slot-scope="props">
+              
               <td class="text-xs-right">{{ props.item.preco }}</td>
+              <td class="text-xs-right">{{ props.item.edicao }}</td>
               <td class="text-xs-right">{{ props.item.condicao }}</td>
               <td class="text-xs-right">{{ props.item.quantidade }}</td>
               <td class="text-xs-right">{{ props.item.idioma }}</td>
-              <td class="text-xs-right">{{ props.item.link }}</td>
+              <td class="text-xs-right"><a :href="props.item.link"> {{ props.item.loja.nome }}</a></td>
             </template>
           </v-data-table>  
         </v-form>
@@ -51,16 +53,13 @@ export default {
     nameRules: [v => !!v || 'Name is required'],
     items: [],
     headers: [
-          {
-            text: 'preco',
-            align: 'right',
-            value: 'preco'
-          },
-          { text: 'Condicao', value: 'condicao' },
-          { text: 'Qtde', value: 'quantidade' },
-          { text: 'Idioma', value: 'idioma' },
-          { text: 'Link', value: 'link' }
-        ],
+      { text: 'Preço', align: 'right', value: 'preco' },
+      { text: 'Edição', align: 'right', value: 'edicao' },
+      { text: 'Condição', align: 'right', value: 'condicao' },
+      { text: 'Quantidade', align: 'right', value: 'quantidade' },
+      { text: 'Idioma', align: 'right', value: 'idioma' },
+      { text: 'Loja', align: 'right', value: 'link' }
+    ]
   }),
 
   methods: {
