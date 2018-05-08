@@ -1,43 +1,45 @@
 <template>
-  <v-container fluid fill-height>
-    <v-layout pt-5>
-      <v-flex xs12>
-        <v-form v-model="valid" ref="form" lazy-validation>
-          <v-text-field
-            label="Name"
-            v-model="name"
-            :rules="nameRules"
-            :counter="10"
-            required
-          ></v-text-field>
-          
-          <v-btn
-            @click="search"
-            :disabled="!valid"
-          >
-            search
-          </v-btn>
-          <v-btn @click="clear">clear</v-btn>
+  <form v-on:submit.prevent>
+    <v-container fluid fill-height>
+      <v-layout pt-5>
+        <v-flex xs12>
+          <v-form v-model="valid" ref="form" lazy-validation>
+            <v-text-field
+              label="Name"
+              v-model="name"
+              :rules="nameRules"
+              :counter="10"
+              required
+              @keyup.enter="search"
+            ></v-text-field>
+            
+            <v-btn
+              @click="search"
+              :disabled="!valid"
+            >
+              search
+            </v-btn>
+            <v-btn @click="clear">clear</v-btn>
 
-
-          <v-data-table
-              :headers="headers"
-              :items="items"
-              hide-actions
-              class="elevation-1"
-          >
-            <template slot="items" slot-scope="props">
-              <td class="text-xs-right">{{ props.item.preco }}</td>
-              <td class="text-xs-right">{{ props.item.condicao }}</td>
-              <td class="text-xs-right">{{ props.item.quantidade }}</td>
-              <td class="text-xs-right">{{ props.item.idioma }}</td>
-              <td class="text-xs-right">{{ props.item.link }}</td>
-            </template>
-          </v-data-table>  
-        </v-form>
-      </v-flex>
-    </v-layout>
-  </v-container >
+            <v-data-table
+                :headers="headers"
+                :items="items"
+                hide-actions
+                class="elevation-1"
+            >
+              <template slot="items" slot-scope="props">
+                <td class="text-xs-right">{{ props.item.preco }}</td>
+                <td class="text-xs-right">{{ props.item.condicao }}</td>
+                <td class="text-xs-right">{{ props.item.quantidade }}</td>
+                <td class="text-xs-right">{{ props.item.idioma }}</td>
+                <td class="text-xs-right">{{ props.item.link }}</td>
+              </template>
+            </v-data-table>  
+          </v-form>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </form>
 </template>
 
 <script>
