@@ -13,7 +13,7 @@ let router = new Router({
       component: Search
     },
     {
-      path: '/multiple',
+      path: '/list',
       name: 'Multiple',
       component: List
     }
