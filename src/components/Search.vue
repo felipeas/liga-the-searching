@@ -1,45 +1,43 @@
 <template>
-  <form v-on:submit.prevent>
-    <v-container fluid fill-height>
-      <v-layout pt-5>
-        <v-flex xs12>
-          <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field
-              label="Name"
-              v-model="name"
-              :rules="nameRules"
-              :counter="10"
-              required
-              @keyup.enter="search"
-            ></v-text-field>
-            
-            <v-btn
-              @click="search"
-              :disabled="!valid"
-            >
-              search
-            </v-btn>
-            <v-btn @click="clear">clear</v-btn>
+  <v-container fluid fill-height>
+    <v-layout pt-5>
+      <v-flex xs12>
+        <v-form v-model="valid" ref="form" lazy-validation @submit.prevent>
+          <v-text-field
+            label="Name"
+            v-model="name"
+            :rules="nameRules"
+            :counter="10"
+            required
+            @keyup.enter="search"
+          ></v-text-field>
+          
+          <v-btn
+            @click="search"
+            :disabled="!valid"
+          >
+            search
+          </v-btn>
+          <v-btn @click="clear">clear</v-btn>
 
-            <v-data-table
-                :headers="headers"
-                :items="items"
-                hide-actions
-                class="elevation-1"
-            >
-              <template slot="items" slot-scope="props">
-                <td class="text-xs-right">{{ props.item.preco }}</td>
-                <td class="text-xs-right">{{ props.item.condicao }}</td>
-                <td class="text-xs-right">{{ props.item.quantidade }}</td>
-                <td class="text-xs-right">{{ props.item.idioma }}</td>
-                <td class="text-xs-right">{{ props.item.link }}</td>
-              </template>
-            </v-data-table>  
-          </v-form>
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </form>
+          <v-data-table
+              :headers="headers"
+              :items="items"
+              hide-actions
+              class="elevation-1"
+          >
+            <template slot="items" slot-scope="props">
+              <td class="text-xs-right">{{ props.item.preco }}</td>
+              <td class="text-xs-right">{{ props.item.condicao }}</td>
+              <td class="text-xs-right">{{ props.item.quantidade }}</td>
+              <td class="text-xs-right">{{ props.item.idioma }}</td>
+              <td class="text-xs-right">{{ props.item.link }}</td>
+            </template>
+          </v-data-table>  
+        </v-form>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
@@ -53,16 +51,13 @@ export default {
     nameRules: [v => !!v || 'Name is required'],
     items: [],
     headers: [
-          {
-            text: 'preco',
-            align: 'right',
-            value: 'preco'
-          },
-          { text: 'Condicao', value: 'condicao' },
-          { text: 'Qtde', value: 'quantidade' },
-          { text: 'Idioma', value: 'idioma' },
-          { text: 'Link', value: 'link' }
-        ],
+      { text: 'Preço', align: 'right', value: 'preco' },
+      { text: 'Edição', align: 'right', value: 'edicao' },
+      { text: 'Condição', align: 'right', value: 'condicao' },
+      { text: 'Quantidade', align: 'right', value: 'quantidade' },
+      { text: 'Idioma', align: 'right', value: 'idioma' },
+      { text: 'Loja', align: 'right', value: 'link' }
+    ]
   }),
 
   methods: {
