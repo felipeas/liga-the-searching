@@ -27,7 +27,7 @@
               class="elevation-1"
           >
             <template slot="items" slot-scope="props">
-              <td class="text-xs-right">{{ props.item.preco }}</td>
+              <td class="text-xs-right">{{ formatPrice(props.item.preco) }}</td>
               <td class="text-xs-right">{{ props.item.condicao }}</td>
               <td class="text-xs-right">{{ props.item.quantidade }}</td>
               <td class="text-xs-right">{{ props.item.idioma }}</td>
@@ -83,6 +83,10 @@ export default {
     },
     open(price) {
       window.location.href = price.link;
+    },
+    formatPrice(value) {
+        let val = (value/1).toFixed(2).replace('.', ',')
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     }
   }
 };

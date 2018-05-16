@@ -29,21 +29,41 @@
             search
           </v-btn>
           <v-btn @click="clear">clear</v-btn>
-
-          <v-data-table
-              :headers="headers"
-              :items="items"
-              hide-actions
-              class="elevation-1"
+          <v-tabs
+            v-model="active"
+            dark
+            slider-color="cyan"
           >
-            <template slot="items" slot-scope="props">
-              <td class="text-xs-right">{{ props.item.preco }}</td>
-              <td class="text-xs-right">{{ props.item.condicao }}</td>
-              <td class="text-xs-right">{{ props.item.quantidade }}</td>
-              <td class="text-xs-right">{{ props.item.idioma }}</td>
-              <td class="text-xs-right">{{ props.item.link }}</td>
-            </template>
-          </v-data-table>  
+            <v-tab
+              v-for="(c, index) in items"
+              :key="index"
+              ripple
+            >
+              {{c.card}}
+            </v-tab>
+            <v-tab-item
+              v-for="(c, index) in items"
+              :key="index"
+            >
+              <v-data-table
+                  :headers="headers"
+                  :items="c.prices"
+                  hide-actions
+                  class="elevation-1"
+              >
+                <template slot="items" slot-scope="props">
+                  <td class="text-xs-right">{{ formatPrice(props.item.preco) }}</td>
+                  <td class="text-xs-right">{{ props.item.edicao }}</td>
+                  <td class="text-xs-right">{{ props.item.condicao }}</td>
+                  <td class="text-xs-right">{{ props.item.quantidade }}</td>
+                  <td class="text-xs-right">{{ props.item.idioma }}</td>
+                  <td class="text-xs-right">{{ props.item.loja.nome }}</td>
+                  <td class="text-xs-right">{{ props.item.link }}</td>
+                </template>
+              </v-data-table>
+            </v-tab-item>
+            
+          </v-tabs>
         </v-form>
       </v-flex>
     </v-layout>
@@ -57,6 +77,7 @@ import parseMolList from '@/parser/mol-list-parser';
 export default {
   name: 'List',
   data: () => ({
+    active: null,
     valid: true,
     list: '',
     listRules: [v => !!v || 'List is required'],
@@ -67,7 +88,8 @@ export default {
       { text: 'Condição', align: 'right', value: 'condicao' },
       { text: 'Quantidade', align: 'right', value: 'quantidade' },
       { text: 'Idioma', align: 'right', value: 'idioma' },
-      { text: 'Loja', align: 'right', value: 'link' }
+      { text: 'Loja', align: 'right', value: 'loja.nome' },
+      { text: 'Link', align: 'right', value: 'link' }
     ]
   }),
 
@@ -77,12 +99,13 @@ export default {
       if (this.$refs.form.validate()) {
         // Native form submission is not yet supported
         //https://liga-the-scrappering-uxfozcbxjv.now.sh
-        const data = parseMolList(this.list);
-        console.log(JSON.stringify(data.map(x => x.name)),null,2);
+        const data = parseMolList(this.list)
+        console.log(data)
+        // console.log('sasd', JSON.stringify(data.map(x => {name: x.name} ),null,2));
         axios
-          .post('http://localhost:3000', JSON.stringify(data.map(x => {name: x.name} )))
+          .post('http://localhost:3000', JSON.stringify(data))
           .then(function(response) {
-            self.items = response.data[0].prices;
+            self.items = response.data
             console.log(response.data);
           })
           .catch(function(error) {
@@ -92,6 +115,10 @@ export default {
     },
     clear() {
       this.$refs.form.reset();
+    },
+    formatPrice(value) {
+        let val = (value/1).toFixed(2).replace('.', ',')
+        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     }
   }
 };
