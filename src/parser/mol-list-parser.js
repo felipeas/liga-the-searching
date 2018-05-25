@@ -7,6 +7,6 @@ export default function parseMolList(plaintextData) {
     return { quantidade, name: name[0] };
   });
 
-  console.log(parsedData);
+  // console.log(parsedData);
   return parsedData;
 }
