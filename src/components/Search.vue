@@ -28,10 +28,11 @@
           >
             <template slot="items" slot-scope="props">
               <td class="text-xs-right">{{ formatPrice(props.item.preco) }}</td>
+              <td class="text-xs-right">{{ props.item.edicao }}</td>
               <td class="text-xs-right">{{ props.item.condicao }}</td>
               <td class="text-xs-right">{{ props.item.quantidade }}</td>
               <td class="text-xs-right">{{ props.item.idioma }}</td>
-              <td class="text-xs-right">{{ props.item.link }}</td>
+              <td class="text-xs-right">{{ props.item.loja.nome.substring(0,15) }}</td>
             </template>
           </v-data-table>  
         </v-form>
@@ -56,7 +57,7 @@ export default {
       { text: 'Condição', align: 'right', value: 'condicao' },
       { text: 'Quantidade', align: 'right', value: 'quantidade' },
       { text: 'Idioma', align: 'right', value: 'idioma' },
-      { text: 'Loja', align: 'right', value: 'link' }
+      { text: 'Loja', align: 'right', value: 'loja.nome' },
     ]
   }),
 

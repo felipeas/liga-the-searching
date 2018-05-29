@@ -18,7 +18,15 @@
             </v-flex>
             <v-flex xs6 text-xs-center>
               <v-card dark color="secondary">
-                <v-card-text class="px-0">[[interpreter]]</v-card-text>
+                <v-list three-line subheader>
+                <v-subheader>Info</v-subheader>
+                <v-list-tile>
+                  <v-list-tile-content v-for="(data, index) in interpreter" :key="`i-${index}`">
+                    <v-list-tile-title>{{data.title}}</v-list-tile-title>
+                    <v-list-tile-sub-title>{{data.desc}}</v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>                
+              </v-list>
               </v-card>
             </v-flex>
           </v-layout>
@@ -29,21 +37,30 @@
             search
           </v-btn>
           <v-btn @click="clear">clear</v-btn>
-          <v-tabs
+          <v-checkbox
+            label="Ignore Basics"
+            v-model="ignoreBasics"
+          ></v-checkbox>
+          <v-radio-group v-model="table" row>
+            <v-radio label="Cards" value="byCards" ></v-radio>
+            <v-radio label="Stores" value="byStores"></v-radio>
+          </v-radio-group>
+          <v-tabs 
+            v-if="table == 'byCards'"
             dark
             v-model="active"
             slider-color="cyan"
           >
             <v-tab
-              v-for="(c, index) in byCard"
-              :key="index"
+              v-for="(c, index) in listCards"
+              :key="`c-${index}`"
               ripple
             >
               {{c.card}}
             </v-tab>
             <v-tab-item
-              v-for="(c, index) in byCard"
-              :key="index"
+              v-for="(c, index) in listCards"
+              :key="`c-${index}`"
             >
               <v-data-table
                   :headers="headersC"
@@ -57,29 +74,28 @@
                   <td class="text-xs-right">{{ props.item.condicao }}</td>
                   <td class="text-xs-right">{{ props.item.quantidade }}</td>
                   <td class="text-xs-right">{{ props.item.idioma }}</td>
-                  <td class="text-xs-right">{{ props.item.loja.nome }}</td>
-                  <td class="text-xs-right">{{ props.item.link }}</td>
+                  <td class="text-xs-right">{{ props.item.loja.nome.substring(0,15) }}</td>
+
                 </template>
               </v-data-table>
             </v-tab-item>
           </v-tabs>
-
-
-          <v-tabs
+          <v-tabs 
+            v-if="table == 'byStores'"
             v-model="active"
             dark
             slider-color="cyan"
           >
             <v-tab
-              v-for="(c, index) in byStore"
-              :key="index"
+              v-for="(c, index) in listStores"
+              :key="`s-${index}`"
               ripple
             >
               {{c.loja}}
             </v-tab>
             <v-tab-item
-              v-for="(c, index) in byStore"
-              :key="index"
+              v-for="(c, index) in listStores"
+              :key="`s-${index}`"
             >
               <v-data-table
                   :headers="headersS"
@@ -94,7 +110,6 @@
                   <td class="text-xs-right">{{ props.item.condicao }}</td>
                   <td class="text-xs-right">{{ props.item.quantidade }}</td>
                   <td class="text-xs-right">{{ props.item.idioma }}</td>
-                  <td class="text-xs-right">{{ props.item.link }}</td>
                 </template>
               </v-data-table>
             </v-tab-item>
@@ -105,8 +120,8 @@
     </v-layout>
   </v-container>
 </template>
-
 <script>
+
 import axios from 'axios';
 import parseMolList from '@/parser/mol-list-parser';
 
@@ -117,8 +132,11 @@ export default {
     valid: true,
     list: '',
     listRules: [v => !!v || 'List is required'],
-    byCard: [],
-    byStore: [],
+    listCards: [],
+    listStores: [],
+    interpreter: [],
+    table: `byCards`,
+    ignoreBasics: false,
     headersC: [
       { text: 'Preço', align: 'right', value: 'preco' },
       { text: 'Edição', align: 'right', value: 'edicao' },
@@ -126,7 +144,7 @@ export default {
       { text: 'Quantidade', align: 'right', value: 'quantidade' },
       { text: 'Idioma', align: 'right', value: 'idioma' },
       { text: 'Loja', align: 'right', value: 'loja.nome' },
-      { text: 'Link', align: 'right', value: 'link' }
+      // { text: 'Link', align: 'right', value: 'link' }
     ],
     headersS: [
       { text: 'Card', align: 'right', value: 'card' },
@@ -135,53 +153,46 @@ export default {
       { text: 'Condição', align: 'right', value: 'condicao' },
       { text: 'Quantidade', align: 'right', value: 'quantidade' },
       { text: 'Idioma', align: 'right', value: 'idioma' },
-      { text: 'Link', align: 'right', value: 'link' }
+      // { text: 'Link', align: 'right', value: 'link' }
     ]
   }),
 
   methods: {
     search() {
-      var self = this;
+      const compute = this.compute;
+      const options = { ignoreBasics: this.ignoreBasics };
+      this.interpreter.push({title: 'Carregando', desc: 'Isto pode demorar um pouco.'})
       if (this.$refs.form.validate()) {
         // Native form submission is not yet supported
         //https://liga-the-scrappering-uxfozcbxjv.now.sh
-        const data = parseMolList(this.list)
-        // console.log(data)
+        const data = parseMolList(this.list, options)
+        console.log(data)
         // console.log('sasd', JSON.stringify(data.map(x => {name: x.name} ),null,2));
         axios
           .post('http://localhost:3000', JSON.stringify(data))
           .then(function(response) {
-            self.byCard = response.data
-            
-
-            //self.byStore = [].concat.apply([], response.data)
-            // self.byStore = response.data.map((x, i) => {
-            //   return x[i];
-            //   console.log(i)
-            //   console.log(x)
-            // })
-            const reducedByStore = response.data.reduce((a,b) => {              
-              return a.concat(b.prices)
-            },[]).reduce((a,b) => {
-              a[b.loja.nome] = a[b.loja.nome] || [];
-              a[b.loja.nome].push(b);
-              return a;
-            }, {});
-
-            self.byStore = Object.keys(reducedByStore).map(key => {
-              return {loja: key, prices: reducedByStore[key]};
-            });
-
-            // console.log('aaaaaaaaaaaaaa', self.byStore);
-            // console.log(JSON.stringify(self.byStore, null, 2))
-          
-            console.log(self.byStore);
-            console.log(response.data);
+            compute(data, response.data);
           })
           .catch(function(error) {
             console.log(error);
           });
       }
+    },
+    compute(list, data) { 
+      this.interpreter = []
+      this.listCards = data
+
+      const reducedByStore = data.reduce((a,b) => {
+        return a.concat(b.prices)
+      },[]).reduce((a,b) => {
+        a[b.loja.nome] = a[b.loja.nome] || [];
+        a[b.loja.nome].push(b);
+        return a;
+      }, {});
+
+      this.listStores = Object.keys(reducedByStore).map(key => {
+        return {loja: key, prices: reducedByStore[key]};
+      });
     },
     clear() {
       this.$refs.form.reset();
