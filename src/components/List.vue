@@ -25,7 +25,7 @@
                     <v-list-tile-title>{{data.title}}</v-list-tile-title>
                     <v-list-tile-sub-title>{{data.desc}}</v-list-tile-sub-title>
                   </v-list-tile-content>
-                </v-list-tile>                
+                </v-list-tile>
               </v-list>
               </v-card>
             </v-flex>
@@ -62,22 +62,7 @@
               v-for="(c, index) in listCards"
               :key="`c-${index}`"
             >
-              <v-data-table
-                  :headers="headersC"
-                  :items="c.prices"
-                  hide-actions
-                  class="elevation-1"
-              >
-                <template slot="items" slot-scope="props">
-                  <td class="text-xs-right">{{ formatPrice(props.item.preco) }}</td>
-                  <td class="text-xs-right">{{ props.item.edicao }}</td>
-                  <td class="text-xs-right">{{ props.item.condicao }}</td>
-                  <td class="text-xs-right">{{ props.item.quantidade }}</td>
-                  <td class="text-xs-right">{{ props.item.idioma }}</td>
-                  <td class="text-xs-right">{{ props.item.loja.nome.substring(0,15) }}</td>
-
-                </template>
-              </v-data-table>
+              <TableCards :list="c.prices"></TableCards>
             </v-tab-item>
           </v-tabs>
           <v-tabs 
@@ -104,105 +89,97 @@
                   class="elevation-1"
               >
                 <template slot="items" slot-scope="props">
-                  <td class="text-xs-right">{{ props.item.card }}</td>
+                  <td class="text-xs-left">{{ props.item.card }}</td>
                   <td class="text-xs-right">{{ formatPrice(props.item.preco) }}</td>
-                  <td class="text-xs-right">{{ props.item.edicao }}</td>
-                  <td class="text-xs-right">{{ props.item.condicao }}</td>
-                  <td class="text-xs-right">{{ props.item.quantidade }}</td>
-                  <td class="text-xs-right">{{ props.item.idioma }}</td>
+                  <td class="text-xs-left">{{ props.item.edicao }}</td>
+                  <td class="text-xs-left">{{ props.item.condicao }}</td>
+                  <td class="text-xs-left">{{ props.item.quantidade }}</td>
+                  <td class="text-xs-left">{{ props.item.idioma }}</td>
                 </template>
               </v-data-table>
             </v-tab-item>
           </v-tabs>
-
         </v-form>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
+
 <script>
+  import axios from 'axios';
+  import parseMolList from '@/parser/mol-list-parser';
+  import TableCards from '@/components/TableCards.vue';
 
-import axios from 'axios';
-import parseMolList from '@/parser/mol-list-parser';
+  export default {
+    name: 'List',
+    components: { TableCards },
+    data: () => ({
+      active: null,
+      valid: true,
+      list: '',
+      listRules: [v => !!v || 'List is required'],
+      listCards: [],
+      listStores: [],
+      interpreter: [],
+      table: `byCards`,
+      ignoreBasics: false,
+      headersS: [
+        { text: 'Card', align: 'left', value: 'card' },
+        { text: 'Preço', align: 'right', value: 'preco' },
+        { text: 'Edição', align: 'left', value: 'edicao' },
+        { text: 'Condição', align: 'left', value: 'condicao' },
+        { text: 'Quantidade', align: 'left', value: 'quantidade' },
+        { text: 'Idioma', align: 'left', value: 'idioma' },
+        // { text: 'Link', align: 'right', value: 'link' }
+      ]
+    }),
 
-export default {
-  name: 'List',
-  data: () => ({
-    active: null,
-    valid: true,
-    list: '',
-    listRules: [v => !!v || 'List is required'],
-    listCards: [],
-    listStores: [],
-    interpreter: [],
-    table: `byCards`,
-    ignoreBasics: false,
-    headersC: [
-      { text: 'Preço', align: 'right', value: 'preco' },
-      { text: 'Edição', align: 'right', value: 'edicao' },
-      { text: 'Condição', align: 'right', value: 'condicao' },
-      { text: 'Quantidade', align: 'right', value: 'quantidade' },
-      { text: 'Idioma', align: 'right', value: 'idioma' },
-      { text: 'Loja', align: 'right', value: 'loja.nome' },
-      // { text: 'Link', align: 'right', value: 'link' }
-    ],
-    headersS: [
-      { text: 'Card', align: 'right', value: 'card' },
-      { text: 'Preço', align: 'right', value: 'preco' },
-      { text: 'Edição', align: 'right', value: 'edicao' },
-      { text: 'Condição', align: 'right', value: 'condicao' },
-      { text: 'Quantidade', align: 'right', value: 'quantidade' },
-      { text: 'Idioma', align: 'right', value: 'idioma' },
-      // { text: 'Link', align: 'right', value: 'link' }
-    ]
-  }),
+    methods: {
+      search() {
+        const compute = this.compute;
+        const options = { ignoreBasics: this.ignoreBasics };
+        this.interpreter.push({title: 'Carregando', desc: 'Isto pode demorar um pouco.'})
+        if (this.$refs.form.validate()) {
+          // Native form submission is not yet supported
+          //https://liga-the-scrappering-uxfozcbxjv.now.sh
+          const data = parseMolList(this.list, options)
+          console.log(data)
+          // console.log('sasd', JSON.stringify(data.map(x => {name: x.name} ),null,2));
+          axios
+            .post('http://localhost:3000', JSON.stringify(data))
+            .then(function(response) {
+              compute(data, response.data);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        }
+      },
+      compute(list, data) { 
+        this.interpreter = []
+        this.listCards = data
 
-  methods: {
-    search() {
-      const compute = this.compute;
-      const options = { ignoreBasics: this.ignoreBasics };
-      this.interpreter.push({title: 'Carregando', desc: 'Isto pode demorar um pouco.'})
-      if (this.$refs.form.validate()) {
-        // Native form submission is not yet supported
-        //https://liga-the-scrappering-uxfozcbxjv.now.sh
-        const data = parseMolList(this.list, options)
-        console.log(data)
-        // console.log('sasd', JSON.stringify(data.map(x => {name: x.name} ),null,2));
-        axios
-          .post('http://localhost:3000', JSON.stringify(data))
-          .then(function(response) {
-            compute(data, response.data);
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
+        const reducedByStore = data.reduce((a,b) => {
+          return a.concat(b.prices)
+        },[]).reduce((a,b) => {
+          a[b.loja.nome] = a[b.loja.nome] || [];
+          a[b.loja.nome].push(b);
+          return a;
+        }, {});
+
+        this.listStores = Object.keys(reducedByStore).map(key => {
+          return {loja: key, prices: reducedByStore[key]};
+        });
+      },
+      clear() {
+        this.$refs.form.reset();
+      },
+      formatPrice(value) {
+          let val = (value/1).toFixed(2).replace('.', ',')
+          return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
       }
-    },
-    compute(list, data) { 
-      this.interpreter = []
-      this.listCards = data
-
-      const reducedByStore = data.reduce((a,b) => {
-        return a.concat(b.prices)
-      },[]).reduce((a,b) => {
-        a[b.loja.nome] = a[b.loja.nome] || [];
-        a[b.loja.nome].push(b);
-        return a;
-      }, {});
-
-      this.listStores = Object.keys(reducedByStore).map(key => {
-        return {loja: key, prices: reducedByStore[key]};
-      });
-    },
-    clear() {
-      this.$refs.form.reset();
-    },
-    formatPrice(value) {
-        let val = (value/1).toFixed(2).replace('.', ',')
-        return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
     }
-  }
-};
+  };
 </script>
 
 <style scoped>
