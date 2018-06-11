@@ -1,4 +1,5 @@
 <template>
+<div>
   <v-data-table
       :headers="header"
       :items="list"
@@ -15,7 +16,8 @@
     </template>
     
   </v-data-table>
-
+  
+</div>
 </template>
 
 <script>
@@ -23,10 +25,8 @@
 import toPilas from '@/helpers/currency';
 
 export default {
-  name: 'TableCards',
-  props: {
-    list: Array
-  },
+  name: 'table-cards',
+  props: [ 'list' ],
   data: () => ({
     header: [
       { text: 'Preço', align: 'left', value: 'preco' },
@@ -37,6 +37,14 @@ export default {
       { text: 'Loja', align: 'left', value: 'loja.nome' },
     ],
   }),
+  methods: {
+    toPilas: toPilas
+  },
+  computed: {
+    test: function() {
+      console.log(this.list);
+    }
+  }
 };
 </script>
 

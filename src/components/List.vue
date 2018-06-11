@@ -62,7 +62,7 @@
               v-for="(c, index) in listCards"
               :key="`c-${index}`"
             >
-              <TableCards :list="c.prices"></TableCards>
+              <table-cards :list="c.prices"></table-cards>
             </v-tab-item>
           </v-tabs>
           <v-tabs 
@@ -82,21 +82,7 @@
               v-for="(c, index) in listStores"
               :key="`s-${index}`"
             >
-              <v-data-table
-                  :headers="headersS"
-                  :items="c.prices"
-                  hide-actions
-                  class="elevation-1"
-              >
-                <template slot="items" slot-scope="props">
-                  <td class="text-xs-left">{{ props.item.card }}</td>
-                  <td class="text-xs-right">{{ formatPrice(props.item.preco) }}</td>
-                  <td class="text-xs-left">{{ props.item.edicao }}</td>
-                  <td class="text-xs-left">{{ props.item.condicao }}</td>
-                  <td class="text-xs-left">{{ props.item.quantidade }}</td>
-                  <td class="text-xs-left">{{ props.item.idioma }}</td>
-                </template>
-              </v-data-table>
+              <table-stores :list="c.prices"></table-stores>
             </v-tab-item>
           </v-tabs>
         </v-form>
@@ -109,10 +95,12 @@
   import axios from 'axios';
   import parseMolList from '@/parser/mol-list-parser';
   import TableCards from '@/components/TableCards.vue';
+  import TableStores from '@/components/TableStores.vue';
 
   export default {
     name: 'List',
-    components: { TableCards },
+    components: { TableCards, TableStores
+     },
     data: () => ({
       active: null,
       valid: true,
@@ -123,15 +111,6 @@
       interpreter: [],
       table: `byCards`,
       ignoreBasics: false,
-      headersS: [
-        { text: 'Card', align: 'left', value: 'card' },
-        { text: 'Preço', align: 'right', value: 'preco' },
-        { text: 'Edição', align: 'left', value: 'edicao' },
-        { text: 'Condição', align: 'left', value: 'condicao' },
-        { text: 'Quantidade', align: 'left', value: 'quantidade' },
-        { text: 'Idioma', align: 'left', value: 'idioma' },
-        // { text: 'Link', align: 'right', value: 'link' }
-      ]
     }),
 
     methods: {
