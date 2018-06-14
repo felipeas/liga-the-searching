@@ -4,20 +4,19 @@
       <v-flex xs12>
         <v-form v-model="valid" ref="form" lazy-validation @submit.prevent>
           <v-layout row wrap>
-            <v-flex xs6>
+            <v-flex fluid xs3 px-1>
               <v-text-field
                 label="List"
                 v-model="list"
                 :rules="listRules"
-                :counter="10"
                 multi-line
                 required
                 @keyup.enter="search"
               >
               </v-text-field>
             </v-flex>
-            <v-flex xs6 text-xs-center>
-              <v-card dark color="secondary">
+            <v-flex fluid xs9 text-xs-center px-1>
+              <v-card color="secondary">
                 <v-list three-line subheader>
                 <v-subheader>Info</v-subheader>
                 <v-list-tile>
@@ -42,49 +41,13 @@
             v-model="ignoreBasics"
           ></v-checkbox>
           <v-radio-group v-model="table" row>
-            <v-radio label="Cards" value="byCards" ></v-radio>
-            <v-radio label="Stores" value="byStores"></v-radio>
+            <v-radio label="Cards" value="card" ></v-radio>
+            <v-radio label="Stores" value="store"></v-radio>
           </v-radio-group>
-          <v-tabs 
-            v-if="table == 'byCards'"
-            dark
-            v-model="active"
-            slider-color="cyan"
+          <group-cards 
+            :data="groups[table]"
           >
-            <v-tab
-              v-for="(c, index) in listCards"
-              :key="`c-${index}`"
-              ripple
-            >
-              {{c.card}}
-            </v-tab>
-            <v-tab-item
-              v-for="(c, index) in listCards"
-              :key="`c-${index}`"
-            >
-              <table-cards :list="c.prices"></table-cards>
-            </v-tab-item>
-          </v-tabs>
-          <v-tabs 
-            v-if="table == 'byStores'"
-            v-model="active"
-            dark
-            slider-color="cyan"
-          >
-            <v-tab
-              v-for="(c, index) in listStores"
-              :key="`s-${index}`"
-              ripple
-            >
-              {{c.loja}}
-            </v-tab>
-            <v-tab-item
-              v-for="(c, index) in listStores"
-              :key="`s-${index}`"
-            >
-              <table-stores :list="c.prices"></table-stores>
-            </v-tab-item>
-          </v-tabs>
+          </group-cards>
         </v-form>
       </v-flex>
     </v-layout>
@@ -94,22 +57,21 @@
 <script>
   import axios from 'axios';
   import parseMolList from '@/parser/mol-list-parser';
-  import TableCards from '@/components/TableCards.vue';
-  import TableStores from '@/components/TableStores.vue';
+  import GroupCards from '@/components/GroupCards.vue';
 
   export default {
     name: 'List',
-    components: { TableCards, TableStores
+    components: { 
+      GroupCards
      },
     data: () => ({
       active: null,
       valid: true,
       list: '',
       listRules: [v => !!v || 'List is required'],
-      listCards: [],
-      listStores: [],
+      groups: [],
       interpreter: [],
-      table: `byCards`,
+      table: `stores`,
       ignoreBasics: false,
     }),
 
@@ -136,8 +98,8 @@
       },
       compute(list, data) { 
         this.interpreter = []
-        this.listCards = data
-
+        this.groups['card'] = data //Default is grouped by card
+        // console.log((data))
         const reducedByStore = data.reduce((a,b) => {
           return a.concat(b.prices)
         },[]).reduce((a,b) => {
@@ -146,8 +108,8 @@
           return a;
         }, {});
 
-        this.listStores = Object.keys(reducedByStore).map(key => {
-          return {loja: key, prices: reducedByStore[key]};
+        this.groups['store'] = Object.keys(reducedByStore).map(key => {
+          return {group: key, prices: reducedByStore[key]};
         });
       },
       clear() {

@@ -1,4 +1,4 @@
-<template>
+  <template>
   <v-container fluid fill-height>
     <v-layout pt-5>
       <v-flex xs12>
