@@ -46,6 +46,7 @@
           </v-radio-group>
           <group-cards 
             :data="groups[table]"
+            :type="table"
           >
           </group-cards>
         </v-form>
@@ -99,7 +100,7 @@
       compute(list, data) { 
         this.interpreter = []
         this.groups['card'] = data //Default is grouped by card
-        // console.log((data))
+        
         const reducedByStore = data.reduce((a,b) => {
           return a.concat(b.prices)
         },[]).reduce((a,b) => {
