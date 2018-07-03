@@ -85,7 +85,7 @@
           // Native form submission is not yet supported
           //https://liga-the-scrappering-uxfozcbxjv.now.sh
           const data = parseMolList(this.list, options)
-          console.log(data)
+          // console.log(data)
           // console.log('sasd', JSON.stringify(data.map(x => {name: x.name} ),null,2));
           axios
             .post('http://localhost:3000', JSON.stringify(data))

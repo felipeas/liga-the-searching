@@ -7,7 +7,7 @@ import router from './router';
 
 Vue.config.productionTip = false;
 Vue.use(Vuetify);
-console.log(process.env);
+// console.log(process.env);
 
 /* eslint-disable no-new */
 new Vue({
